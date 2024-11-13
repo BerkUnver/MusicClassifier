@@ -1,0 +1,4 @@
+* text eol=lf
+*.ipynb text
+*.gitattributes text
+*.gitignore text
