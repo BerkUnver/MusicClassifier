@@ -8,7 +8,7 @@ Unzip them both into the project directory, and it should work.
 # Setup
 To get started (on Windows), create a virtual environment in your repository folder using: 
 ```
-python -m venv "env
+python -m venv env
 ```
 In your terminal (cmd), you can activate the virtual environment using:
 ```
