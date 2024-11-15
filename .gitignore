@@ -3,3 +3,4 @@ Datasets
 .env
 env/
 *.swp
+__pycache__
