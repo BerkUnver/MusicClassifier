@@ -22,15 +22,20 @@ import pandas
 gtzan_genre_count = 10
 gtzan_songs_per_genre = 100
 
-
-def find_gtzan_features_most_associated_with_genre(frame: pandas.DataFrame, plot: matplotlib.axes.Axes):
+def find_gtzan_genres_most_associated_with_features(frame: pandas.DataFrame, plot: matplotlib.axes.Axes):
     # The only features we want to look at are the ones from the second index onwards.
-    # The first two columns are filename and length (which is constant), and the last column is the genre as a string name. We can ignore these.
+    # The first two columns are filename and length (which is constant). We can ignore these.
     frame_feature_start_index = 2
-    data = frame.to_numpy()[:, frame_feature_start_index:frame.columns.size-1].astype(np.float32)
+    
+    # The last column is the genre label, and there are 20 pairs of mfcc mean and variance.
+    # As far as I can tell these become less meaningful the higher your mfcc index is.
+    # So we will ignore the last 16, and because there are mean and variance for each one,
+    # this becomes 32.
+    frame_feature_end_index = frame.columns.size - (1 + 16*2)
+    data = frame.to_numpy()[:, frame_feature_start_index:frame_feature_end_index].astype(np.float32)
     
     feature_count = data.shape[1]
-    genre_feature_stdev = np.ndarray((gtzan_genre_count, feature_count), dtype=np.float32)
+    feature_genre_stdev = np.ndarray((feature_count, gtzan_genre_count), dtype=np.float32)
     # A [gtzan_genre_count, feature_count] array. Contains the standard deviation of each feature per genre.
 
     # ToDo: Figure out how to vectorize this
@@ -40,31 +45,22 @@ def find_gtzan_features_most_associated_with_genre(frame: pandas.DataFrame, plot
         for feature_index in range(feature_count):
             genre_feature = data[start_index:end_index, feature_index]
             # All the values of a specific feature per genre
+            stdev = np.std(genre_feature)
+            feature_genre_stdev[feature_index, genre_index] = stdev
 
-            mean = np.mean(genre_feature)
-            normalization_factor = 1 / mean # Multiply the mean by this to get 1. Used to normalize the standard deviation.
-            stdev = np.std(genre_feature, mean=mean)
-            genre_feature_stdev[genre_index, feature_index] = stdev * normalization_factor
-    
-    
-    stdev_mins = np.argmin(genre_feature_stdev, axis=0)
-    # A [feature_count] array with the indices of the genre most closely associated (lowest stdev) with a given feature.
-    
-    plot.set_title("Genres most closely associated with features (INCOMPLETE!)")
-    plot.set_xlabel("Genre")
-    plot.set_ylabel("Feature standard deviation")
-    plot.set_yscale("log")
-    
-    genres = frame["label"][::gtzan_songs_per_genre]
-    plot.set_xticks(np.arange(gtzan_genre_count), genres)
+    genres_ranked_per_feature = np.argsort(feature_genre_stdev, axis=1)
 
-    for genre_index in range(gtzan_genre_count):
-        feature_stdev = genre_feature_stdev[genre_index]
-        for feature_index in range(feature_stdev.size):
-            stdev = feature_stdev[feature_index]
-            feature_name = frame.columns[frame_feature_start_index + feature_index]
-            plot.scatter(genre_index, stdev, c="#0000ff")
-            plot.annotate(feature_name, (genre_index, stdev))
+    genre_names = np.array([frame.at[i * gtzan_songs_per_genre, "label"] for i in range(gtzan_genre_count)])
+    feature_names = np.array(frame.columns[frame_feature_start_index:frame_feature_end_index])
+
+    cell_text = genre_names[genres_ranked_per_feature]
+
+    plot.set_title(f"Genres most strongly associated with a given feature (Strongest = leftmost)")
+    plot.axis("off") 
+    table = plot.table(cellText=cell_text, rowLabels=feature_names, loc="center")
+    table.auto_set_font_size(False)
+    table.set_fontsize(4)
+    table.scale(1, 0.3)
 
 
 
@@ -149,7 +145,7 @@ def plot_gtzan():
     genre_plot.set_ylabel("spectral centroid")
     genre_plot.scatter(bpm, spectral_centroid, c=genre_labels, cmap="plasma", s=point_size)
 
-    find_gtzan_features_most_associated_with_genre(frame, feature_stdev_plot)
+    find_gtzan_genres_most_associated_with_features(frame, feature_stdev_plot)
 
     plt.show()
 
