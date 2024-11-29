@@ -24,18 +24,15 @@ gtzan_songs_per_genre = 100
 
 
 def find_gtzan_features_most_associated_with_genre(frame: pandas.DataFrame, plot: matplotlib.axes.Axes):
-    feature_count = frame.columns.size - 3 # The first two columns are filename and length (which is constant), and the last column is the genre as a string name. We can ignore these.
-    # First column: File name. We can ignore this.
-    # Second column: File length. This is constant for all GTZAN files. We can ignore this.
-    # Final column: Genre name. We can look this up later, so we can ignore this.
+    # The only features we want to look at are the ones from the second index onwards.
+    # The first two columns are filename and length (which is constant), and the last column is the genre as a string name. We can ignore these.
+    frame_feature_start_index = 2
+    data = frame.to_numpy()[:, frame_feature_start_index:frame.columns.size-1].astype(np.float32)
     
-    genre_feature_averages = np.ndarray((gtzan_genre_count, feature_count), dtype=np.float32)
-    # A [gtzan_genre_count, feature_count] array. Contains the mean of each feature per genre.
+    feature_count = data.shape[1]
     genre_feature_stdev = np.ndarray((gtzan_genre_count, feature_count), dtype=np.float32)
-    # Same as the above, but for standard deviation.
-    
-    data = frame.to_numpy()[:, 2:frame.columns.size-1].astype(np.float32)
-    
+    # A [gtzan_genre_count, feature_count] array. Contains the standard deviation of each feature per genre.
+
     # ToDo: Figure out how to vectorize this
     for genre_index in range(gtzan_genre_count):
         start_index = genre_index * gtzan_songs_per_genre
@@ -45,13 +42,13 @@ def find_gtzan_features_most_associated_with_genre(frame: pandas.DataFrame, plot
             # All the values of a specific feature per genre
 
             mean = np.mean(genre_feature)
-            genre_feature_averages[genre_index, feature_index] = mean
+            normalization_factor = 1 / mean # Multiply the mean by this to get 1. Used to normalize the standard deviation.
             stdev = np.std(genre_feature, mean=mean)
-            genre_feature_stdev[genre_index, feature_index] = stdev
+            genre_feature_stdev[genre_index, feature_index] = stdev * normalization_factor
+    
     
     stdev_mins = np.argmin(genre_feature_stdev, axis=0)
     # A [feature_count] array with the indices of the genre most closely associated (lowest stdev) with a given feature.
-    
     
     plot.set_title("Genres most closely associated with features (INCOMPLETE!)")
     plot.set_xlabel("Genre")
@@ -63,10 +60,11 @@ def find_gtzan_features_most_associated_with_genre(frame: pandas.DataFrame, plot
 
     for genre_index in range(gtzan_genre_count):
         feature_stdev = genre_feature_stdev[genre_index]
-        for feature in feature_stdev:
-            plot.scatter(genre_index, feature)
-    
-    # ToDo: We need to normalize the standard deviations, likely by making each mean 1, because they otherwise are not on the same scale.
+        for feature_index in range(feature_stdev.size):
+            stdev = feature_stdev[feature_index]
+            feature_name = frame.columns[frame_feature_start_index + feature_index]
+            plot.scatter(genre_index, stdev, c="#0000ff")
+            plot.annotate(feature_name, (genre_index, stdev))
 
 
 
@@ -144,8 +142,6 @@ def plot_gtzan():
     # It has 100 0s followed by  100 2s followed by 100 3s, and so on.
     # These are integer labels by genre.
     #           -berk, November 11, 2024
-
-
     genre_labels = np.repeat(np.arange(0, gtzan_genre_count), gtzan_songs_per_genre)
 
     genre_plot.set_title("Genre plot")
