@@ -14,7 +14,7 @@ python -m venv env
 ```
 In your terminal (cmd), you can activate the virtual environment using:
 ```
-env/Scripts/activate
+env\Scripts\activate
 ```
 On Powershell, use activate.ps1 instead. To close your environment, use 
 ```
