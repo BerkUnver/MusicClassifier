@@ -25,3 +25,7 @@ Finally, while your virtual environment is active, make sure you have all the de
 pip install -r requirements.txt
 ```
 Sidenote: there is currently an issue with installing numpy due to different dependencies requiring different versions. When numba 0.61 comes out the issue should be resolved.
+
+# Experiments Scripts
+Run the scripts from the Experiments directory with the working directory as the project root.
+```python Experiments\PlotGTZAN.py```

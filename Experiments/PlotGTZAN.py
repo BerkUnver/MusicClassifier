@@ -220,16 +220,7 @@ def gtzan_torch_pca(
 
     colors = plt.colormaps['plasma'](np.linspace(0, 1, gtzan_genre_count))
     patches = [matplotlib.patches.Patch(color=color) for color in colors]
-    genre_plot.legend(patches, genre_names)    
-
-#     color = plt.colormaps['plasma'](np.linspace(0.15, 0.85, gtzan_genre_count))
-#     for i in range(gtzan_genre_count):
-#         color = colors[i]
-#         genre_name = genre_names[i]
-# 
-#     for color in colors:
-#     genre_plot.legend(ncols=gtzan_genre_count, bbox_to_anchor=(0, 1), loc="lower left", fontsize="small")
-# 
+    genre_plot.legend(patches, genre_names)
 
 
 
