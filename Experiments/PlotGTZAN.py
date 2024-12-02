@@ -11,14 +11,6 @@ import torch
 # Test clustering features in respect to genre
 #
 
-# This is just a basic example to show how we can do k-means clustering 
-# on a per-feature basis. A future step we can take is to figure out
-# which of the gtzan pre-extracted features most closely correspond to 
-# genre, which may have some interesting results. I'm not sure if that 
-# will involve deep learning or if we can do that with more 
-# conventional algorithms.
-#           -berk, November 15, 2024
-
 
 gtzan_genre_count = 10
 gtzan_songs_per_genre = 100
