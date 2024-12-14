@@ -8,19 +8,24 @@ Unzip them both into the project directory.
 # Runnable scripts
 Navigate to the main directory of this project.
 
-Run the clustering based on bpm and spectral centroid:
+Run the clustering based on bpm and spectral centroid (Berk Unver's contribution)
 ```bash
-python Experiments/gtzan_bpm_and_specular_centroid.py
+python gtzan_bpm_and_specular_centroid.py
 ```
 
-Generate the tables ranking each genre by feature
+Generate the tables ranking each genre by feature (Berk Unver's contribution)
 ```bash
-python Experiments/gtzan_genres_ranked.py
+python gtzan_genres_ranked.py
 ```
 
-Run Principle Component Analysis and K-Means
+Run Principle Component Analysis and K-Means (Berk Unver's contribution)
 ```bash
-python Experiments/gtzan_pca.py
+python gtzan_pca.py
+```
+
+Run the neural network (Sunny Chan's contribution)
+```bash
+python gtzan_model.py
 ```
 
 # Setup
