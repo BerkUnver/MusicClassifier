@@ -5,7 +5,23 @@ https://drive.google.com/drive/folders/1fEJeKYphScj5x9L808BDD6F-ffSY8PKf?usp=dri
 Google drive will download this as two separate zip files because they are so big.
 Unzip them both into the project directory.
 
-The project is located in the file MusicClassifier.ipynb.
+# Runnable scripts
+Navigate to the main directory of this project.
+
+Run the clustering based on bpm and spectral centroid:
+```bash
+python Experiments/gtzan_bpm_and_specular_centroid.py
+```
+
+Generate the tables ranking each genre by feature
+```bash
+python Experiments/gtzan_genres_ranked.py
+```
+
+Run Principle Component Analysis and K-Means
+```bash
+python Experiments/gtzan_pca.py
+```
 
 # Setup
 To get started (on Windows), create a virtual environment in your repository folder using: 
@@ -25,7 +41,3 @@ Finally, while your virtual environment is active, make sure you have all the de
 pip install -r requirements.txt
 ```
 Sidenote: there is currently an issue with installing numpy due to different dependencies requiring different versions. When numba 0.61 comes out the issue should be resolved.
-
-# Experiments Scripts
-Run the scripts from the Experiments directory with the working directory as the project root.
-```python Experiments\PlotGTZAN.py```
